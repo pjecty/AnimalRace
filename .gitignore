@@ -1,24 +1,26 @@
-# Logs
+# 기본 로그 / 캐시
 logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
 *.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Node modules
+node_modules/
+
+# Vite
+dist/
+.vite/
+
+# OS
 .DS_Store
+
+# IDE/에디터
+.idea/
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# 환경변수
+.env*
