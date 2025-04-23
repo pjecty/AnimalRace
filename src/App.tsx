@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+const characterImages = [
+    "tiger",
+    "dog",
+    "panda",
+    "cat",
+    "fox",
+    "lion",
+    "rabbit",
+    "sheep",
+    "penguin",
+    "monkey",
+];
+
+import { useState } from "react";
+import NameInputForm from "./components/NameInputForm";
+import GameCanvas from "./components/GameCanvas";
+import { useGameStore } from "./store/gameStore";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [started, setStarted] = useState(false);
+    const setCharacters = useGameStore((state) => state.setCharacters);
+    const resetCharacters = useGameStore((state) => state.resetCharacters);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const needsObject = (name: string) => ["dog", "monkey", "penguin"].includes(name.toLowerCase());
+
+    const handleStart = (names: string[]) => {
+        const images = [...characterImages].sort(() => Math.random() - 0.5);
+
+        const chars = names.map((name, index) => {
+            const characterKey = images[index % images.length];
+            return {
+                id: index,
+                name,
+                image: `/assets/characters/${characterKey}.png`,
+                skillImage: `/assets/characters/${characterKey}_skill.png`,
+                objectImage: needsObject(characterKey) ? `/assets/characters/${characterKey}_skill_object.png` : undefined,
+                x: 0,
+                speed: Math.random() * 1.5 + 1,
+                isFinished: false,
+            };
+        });
+
+        setCharacters(chars);
+        setStarted(true);
+    };
+
+    const handleReset = () => {
+        resetCharacters();
+        setStarted(false); // 다시 이름 입력 화면으로
+    };
+
+    return (
+        <div>
+            {!started ? (
+                <NameInputForm onStart={handleStart} />
+            ) : (
+                <GameCanvas onReset={handleReset} />
+            )}
+        </div>
+    );
 }
 
-export default App
+export default App;
