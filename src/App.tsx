@@ -35,7 +35,9 @@ function App() {
                 skillImage: `/assets/characters/${characterKey}_skill.png`,
                 objectImage: needsObject(characterKey) ? `/assets/characters/${characterKey}_skill_object.png` : undefined,
                 x: 0,
-                speed: Math.random() * 1.5 + 1,
+                // 0.7 ~ 1.0 사이의 랜덤 속도
+                speed: Math.random() * 0.3 + 0.7,
+                // speed: characterKey === "penguin" ? 1.2 : 1,
                 isFinished: false,
             };
         });
