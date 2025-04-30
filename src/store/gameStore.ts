@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-// 캐릭터 상태에 블록 기능을 위한 필드 추가
+// 캐릭터 상태 정의
 export type Character = {
     id: number;
     name: string;
@@ -8,19 +8,20 @@ export type Character = {
     skillImage?: string;
     objectImage?: string;
     x: number;
+    y: number;
     speed: number;
     isFinished: boolean;
-    // 스킬 사용 상태
     isUsingSkill?: boolean;
     skillEndTime?: number;
-    // 상태 효과
     hasShield?: boolean;
     isFrozen?: boolean;
     isSlowed?: boolean;
-    // 얼음벽(block) 상태
     isBlocked?: boolean;
     blockEndTime?: number;
-    originalSpeed?: number;
+    isSpinning?: boolean;
+    spinEndTime?: number;
+    isStunned?: boolean;
+    stunEndTime?: number;
 };
 
 export type SkillObject = {
@@ -30,9 +31,10 @@ export type SkillObject = {
     x: number;
     y: number;
     speed: number;
-    effect: "slow" | "block" | "freeze";
+    effect: "slow" | "block" | "freeze" | "spin" | "stun";
     duration: number;
     createdAt: number;
+    targetId?: number;
 };
 
 type GameState = {
@@ -51,10 +53,15 @@ export const useGameStore = create<GameState>((set) => ({
     ranking: [],
     objects: [],
 
-    // 캐릭터 초기화 (reset 포함)
-    setCharacters: (chars) => set({ characters: chars, ranking: [], objects: [] }),
+    // ✅ 캐릭터 업데이트 (ranking은 유지)
+    setCharacters: (chars) =>
+        set((state) => ({
+            characters: chars,
+            ranking: state.ranking,
+            objects: state.objects,
+        })),
 
-    // x 좌표 업데이트
+    // 위치 갱신
     updateX: (id, x) =>
         set((state) => ({
             characters: state.characters.map((c) =>
@@ -62,7 +69,7 @@ export const useGameStore = create<GameState>((set) => ({
             ),
         })),
 
-    // 결승 처리 및 순위 추가
+    // 결승 처리
     markFinished: (id) =>
         set((state) => {
             const char = state.characters.find((c) => c.id === id);
@@ -75,9 +82,11 @@ export const useGameStore = create<GameState>((set) => ({
             };
         }),
 
-    // 스토어 초기화
-    resetCharacters: () => set({ characters: [], ranking: [], objects: [] }),
+    // 게임 전체 리셋 (이건 ranking도 같이 초기화)
+    resetCharacters: () =>
+        set({ characters: [], ranking: [], objects: [] }),
 
-    // 스킬 오브젝트 설정
-    setObjects: (objects) => set({ objects }),
+    // 오브젝트 설정
+    setObjects: (objects) =>
+        set({ objects }),
 }));
